@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صلاة ليلة القدر المباركة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --dark-blue: #0A1931;
+            --islamic-green: #009688;
+        }
+
+        body {
+            font-family: 'Amiri', serif;
+            background: linear-gradient(45deg, var(--dark-blue), #1a3650);
+            color: white;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            padding: 2rem;
+        }
+
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 2rem;
+            animation: fadeIn 1s ease;
+        }
+
+        .prayer-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .prayer-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 1.1rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-group-item:hover {
+            background: #f8f9fa;
+            padding-right: 2rem;
+        }
+
+        .btn-prayer {
+            background: linear-gradient(45deg, var(--islamic-green), #00796B);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-prayer:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 150, 136, 0.4);
+        }
+
+        .congratulations {
+            background: linear-gradient(45deg, #4CAF50, #009688);
+            border-radius: 15px;
+            padding: 2rem;
+            animation: glow 2s infinite alternate;
+        }
+
+        .day-counter {
+            font-size: 1.5rem;
+            background: rgba(255, 215, 0, 0.1);
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            border: 1px solid var(--gold);
+        }
+
+        .locked {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .locked::after {
+            content: "🔒";
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); }
+            to { box-shadow: 0 0 30px rgba(76, 175, 80, 0.6); }
+        }
+
+        .modal-content {
+            background: linear-gradient(45deg, var(--dark-blue), #1a3650);
+            border: 1px solid var(--gold);
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center">
+    <div class="container text-center">
+        
+        <!-- شاشة الترحيب -->
+        <div id="welcome" class="welcome-card">
+            <h1 class="mb-4" style="color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);">
+                🌙 ليلة القدر المباركة 🌙
+            </h1>
+            <p class="lead fs-4">نساعدك في أداء المئة ركعة بأسلوب منظم وميسر</p>
+            <div class="mt-5">
+                <button onclick="startApp()" class="btn btn-prayer">
+                    ابدأ الصلاة الآن ✨
+                </button>
+            </div>
+            <div class="mt-4 text-muted">
+                <small>تصميم: أحمد فلاح</small>
+            </div>
+        </div>
+
+        <!-- شاشة الصلاة -->
+        <div id="prayer-container" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 id="day-title" class="text-gold"></h2>
+                <div class="day-counter">
+                    الركعات المتبقية: <span id="counter">100</span>
+                </div>
+            </div>
+            <div class="prayer-card">
+                <ul id="prayer-list" class="list-group list-group-flush"></ul>
+            </div>
+        </div>
+
+        <!-- شاشة التهنئة -->
+        <div id="congratulations" class="congratulations" style="display: none;">
+            <div class="display-4 mb-4">مبروك! 🎉</div>
+            <p class="fs-5">أتممتم المئة ركعة بنجاح<br>أسأل الله أن يتقبل منا ومنكم الصالحات</p>
+            <div class="mt-4">
+                <button onclick="location.reload()" class="btn btn-outline-light">
+                    إعادة البدء
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- نافذة التنبيه -->
+    <div class="modal fade" id="prayerModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-5">
+                    <h3 id="modalText" class="text-success"></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let totalPrayers = 100;
+        let currentDay = 1;
+        let prayers;
+        const dayColors = ["#0A1931", "#1a3650", "#1d4b6e", "#236e8f", "#2a92b0", "#31b7d1"];
+        const dayNames = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس"];
+
+        function startApp() {
+            document.getElementById('welcome').style.display = 'none';
+            document.getElementById('prayer-container').style.display = 'block';
+            loadDay();
+        }
+
+        function loadDay() {
+            if (currentDay > 6) {
+                document.getElementById('prayer-container').style.display = 'none';
+                document.getElementById('congratulations').style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('day-title').textContent = `اليوم ${dayNames[currentDay - 1]}`;
+            document.body.style.background = dayColors[currentDay - 1];
+            
+            prayers = currentDay === 6 ?
+                [
+                    ['صلاة الظهر - أربع ركعات', 4],
+                    ['صلاة العصر - أربع ركعات', 4],
+                    ['صلاة المغرب - ثلاث ركعات', 3],
+                    ['صلاة العشاء - أربع ركعات', 4]
+                ] :
+                [
+                    ['صلاة الصبح - ركعتين', 2],
+                    ['صلاة الظهر - أربع ركعات', 4],
+                    ['صلاة العصر - أربع ركعات', 4],
+                    ['صلاة المغرب - ثلاث ركعات', 3],
+                    ['صلاة العشاء - أربع ركعات', 4]
+                ];
+            
+            updateList();
+            updateCounter();
+        }
+
+        function pray(index) {
+            if (prayers[index] && index === 0) {
+                totalPrayers -= prayers[index][1];
+                showModal(`تمت ${prayers[index][0]} بنجاح!`);
+                
+                prayers.splice(index, 1);
+                updateList();
+                updateCounter();
+                
+                if (prayers.length === 0) {
+                    setTimeout(() => {
+                        currentDay++;
+                        loadDay();
+                    }, 1500);
+                }
+            }
+        }
+
+        function showModal(text) {
+            document.getElementById('modalText').textContent = text;
+            new bootstrap.Modal(document.getElementById('prayerModal')).show();
+        }
+
+        function updateList() {
+            const list = document.getElementById('prayer-list');
+            list.innerHTML = '';
+            prayers.forEach((prayer, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = `list-group-item d-flex justify-content-between align-items-center ${index > 0 ? 'locked' : ''}`;
+                listItem.innerHTML = `
+                    ${prayer[0]}
+                    <span class="badge bg-primary rounded-pill">${prayer[1]} ركعات</span>
+                `;
+                if (index === 0) {
+                    listItem.onclick = () => pray(index);
+                }
+                list.appendChild(listItem);
+            });
+        }
+
+        function updateCounter() {
+            document.getElementById('counter').innerHTML = `
+                <span class="fw-bold">${totalPrayers}</span> ركعة متبقية
+            `;
+        }
+    </script>
+</body>
+</html>
